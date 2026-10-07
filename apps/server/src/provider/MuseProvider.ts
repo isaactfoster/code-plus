@@ -120,25 +120,59 @@ export function buildMuseModelsFromCatalog(entries: ReadonlyArray<Record<string,
   return { models, defaultSlug };
 }
 
+function museDescribedEffortLabels(entry: Record<string, unknown>): Map<string, string> {
+  const labels = new Map<string, string>();
+  const described = entry.reasoningEffortVariants;
+  if (!Array.isArray(described)) return labels;
+  for (const variant of described) {
+    if (typeof variant === "string") {
+      const tier = variant.trim();
+      if (tier && !labels.has(tier)) labels.set(tier, tier);
+      continue;
+    }
+    if (typeof variant === "object" && variant !== null) {
+      const record = variant as Record<string, unknown>;
+      const tierRaw = record.tier ?? record.id ?? record.value;
+      const tier = typeof tierRaw === "string" ? tierRaw.trim() : "";
+      if (!tier) continue;
+      const labelRaw = record.description ?? record.label;
+      const label = typeof labelRaw === "string" && labelRaw.trim() ? labelRaw.trim() : tier;
+      if (!labels.has(tier)) labels.set(tier, label);
+    }
+  }
+  return labels;
+}
+
+function museEffortIdsFromCatalogEntry(entry: Record<string, unknown>): string[] {
+  const ids: string[] = [];
+  const push = (value: unknown) => {
+    if (typeof value !== "string") return;
+    const trimmed = value.trim();
+    if (trimmed && !ids.includes(trimmed)) ids.push(trimmed);
+  };
+  // `variants` is the complete ordered selectable effort set on current
+  // hosts; it carries the explicit "unknown" scalar when the host cannot
+  // say. Older hosts only sent string rows under `reasoningEffortVariants`.
+  const variants = entry.variants;
+  if (Array.isArray(variants)) {
+    for (const variant of variants) push(variant);
+    if (ids.length > 0) return ids;
+  } else if (variants === "unknown") {
+    return [];
+  }
+  const legacy = entry.reasoningEffortVariants;
+  if (Array.isArray(legacy)) {
+    for (const variant of legacy) {
+      if (typeof variant === "string") push(variant);
+    }
+  }
+  return ids;
+}
+
 function museCapabilitiesFromCatalogEntry(entry: Record<string, unknown>): ModelCapabilities {
-  const variants = entry.reasoningEffortVariants;
-  const ids: string[] = Array.isArray(variants)
-    ? variants
-        .map((variant) =>
-          typeof variant === "string"
-            ? variant
-            : typeof variant === "object" && variant !== null
-              ? String(
-                  (variant as Record<string, unknown>).id ??
-                    (variant as Record<string, unknown>).value ??
-                    "",
-                )
-              : "",
-        )
-        .map((value) => value.trim())
-        .filter((value) => value.length > 0)
-    : [];
+  const ids = museEffortIdsFromCatalogEntry(entry);
   if (ids.length === 0) return EMPTY_CAPABILITIES;
+  const labels = museDescribedEffortLabels(entry);
   const defaultEffort =
     typeof entry.defaultReasoningEffort === "string" && ids.includes(entry.defaultReasoningEffort)
       ? entry.defaultReasoningEffort
@@ -151,7 +185,7 @@ function museCapabilitiesFromCatalogEntry(entry: Record<string, unknown>): Model
         type: "select",
         options: ids.map((id) => ({
           id,
-          label: id,
+          label: labels.get(id) ?? id,
           ...(id === defaultEffort ? { isDefault: true } : {}),
         })),
         ...(defaultEffort ? { currentValue: defaultEffort } : {}),
@@ -165,8 +199,21 @@ function looksLikeAuthError(message: string): boolean {
 }
 
 type MuseHandshakeProbeResult =
-  | { readonly ok: true; readonly tier: string | undefined; readonly usage: Record<string, unknown> | undefined }
+  | {
+      readonly ok: true;
+      readonly tier: string | undefined;
+      readonly usage: Record<string, unknown> | undefined;
+      readonly catalog: ReadonlyArray<Record<string, unknown>>;
+    }
   | { readonly ok: false; readonly message: string };
+
+function museCatalogEntriesFromModelList(value: Record<string, unknown> | undefined): ReadonlyArray<Record<string, unknown>> {
+  const models = value?.models;
+  if (!Array.isArray(models)) return [];
+  return models.filter(
+    (entry): entry is Record<string, unknown> => typeof entry === "object" && entry !== null,
+  );
+}
 
 function runMuseHandshakeProbe(
   binaryPath: string,
@@ -185,15 +232,20 @@ function runMuseHandshakeProbe(
     const usage = yield* Effect.option(
       Effect.mapError(handle.request("usage/read", undefined), (cause) => cause.message),
     );
+    const catalog = yield* Effect.option(
+      Effect.mapError(handle.request("model/list", undefined), (cause) => cause.message),
+    );
     yield* Effect.ignore(handle.close());
+    const entries = Option.isNone(catalog) ? [] : museCatalogEntriesFromModelList(catalog.value);
     if (Option.isNone(usage) || !isMuseSubscriptionUsage(usage.value)) {
-      return { ok: true as const, tier: undefined, usage: undefined };
+      return { ok: true as const, tier: undefined, usage: undefined, catalog: entries };
     }
     const subscription = usage.value;
     return {
       ok: true as const,
       tier: typeof subscription.tier === "string" && subscription.tier.trim() ? subscription.tier.trim() : undefined,
       usage: subscription as unknown as Record<string, unknown>,
+      catalog: entries,
     };
   }).pipe(
     Effect.catch(() => Effect.succeed({ ok: false as const, message: "Muse serve probe failed." })),
@@ -328,18 +380,30 @@ export const checkMuseProviderStatus = Effect.fn("checkMuseProviderStatus")(func
   }
   const usageRecord =
     probed.usage !== undefined && isMuseSubscriptionUsage(probed.usage) ? probed.usage : undefined;
+  // `usage/read` omits `usage` when the host has observed nothing, so no
+  // usage payload means auth is unconfirmed rather than authenticated.
+  const { models: catalogModels } = buildMuseModelsFromCatalog(probed.catalog);
+  const models =
+    catalogModels.length > 0
+      ? providerModelsFromSettings(catalogModels, museSettings.customModels ?? [], EMPTY_CAPABILITIES)
+      : fallbackModels;
   return buildServerProvider({
     presentation: MUSE_PRESENTATION,
     enabled: true,
     checkedAt,
-    models: fallbackModels,
+    models,
     probe: {
       installed: true,
       version,
       status: "ready",
-      auth: { status: "authenticated" },
+      auth: { status: usageRecord ? "authenticated" : "unknown" },
       ...(usageRecord ? { usageLimits: museUsageToLimits(usageRecord) } : {}),
-      ...(probed.tier ? { message: `Muse subscription (${probed.tier}).` } : {}),
+      ...(probed.tier
+        ? { message: `Muse subscription (${probed.tier}).` }
+        : {
+            message:
+              "Muse serve answered but reported no subscription usage. Complete Muse's login if you are not signed in.",
+          }),
     },
   });
 });
