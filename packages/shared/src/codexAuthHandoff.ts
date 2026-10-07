@@ -85,7 +85,7 @@ export function codexCallbackUrl(value: string, redirectUri: string, state: stri
 }
 
 export function codexAuthHandoffUrl(input: CodexAuthHandoff, development = false) {
-  const url = new URL(`${development ? "t3code-dev" : "t3code"}://auth/codex`);
+  const url = new URL(`${development ? "codeplus-dev" : "codeplus"}://auth/codex`);
   url.searchParams.set("request", encodeHandoff(input));
   return url.toString();
 }
@@ -93,9 +93,11 @@ export function codexAuthHandoffUrl(input: CodexAuthHandoff, development = false
 export function readCodexAuthHandoff(value: string, development: boolean) {
   try {
     const url = new URL(value);
+    // Accept the legacy t3code schemes so older clients/deep links still verify.
+    const expected = development ? ["codeplus-dev:", "t3code-dev:"] : ["codeplus:", "t3code:"];
     if (
       value.length > 32_768 ||
-      url.protocol !== (development ? "t3code-dev:" : "t3code:") ||
+      !expected.includes(url.protocol) ||
       url.host !== "auth" ||
       url.pathname !== "/codex" ||
       url.username ||

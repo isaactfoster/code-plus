@@ -5,10 +5,20 @@
  * platform key, so a rename here is a release-breaking change.
  */
 
-const CLI_RELEASE_REPOSITORY = "pingdotgg/t3code";
+const CLI_RELEASE_REPOSITORY = "isaactfoster/foscode";
 export const CLI_RELEASE_CHECKSUMS_FILE = "SHA256SUMS";
 /** Overrides the download origin for mirrors and air-gapped installs. */
-export const CLI_RELEASE_BASE_URL_ENV = "T3CODE_RELEASE_BASE_URL";
+export const CLI_RELEASE_BASE_URL_ENV = "CODEPLUS_RELEASE_BASE_URL";
+/** Legacy mirror override, honored as a fallback. */
+export const LEGACY_CLI_RELEASE_BASE_URL_ENV = "T3CODE_RELEASE_BASE_URL";
+
+/** Read the release mirror override: `CODEPLUS_RELEASE_BASE_URL` wins. */
+export const readReleaseBaseUrl = (
+  env: NodeJS.ProcessEnv | Readonly<Record<string, string | undefined>>,
+): string | undefined =>
+  env[CLI_RELEASE_BASE_URL_ENV]?.trim() ||
+  env[LEGACY_CLI_RELEASE_BASE_URL_ENV]?.trim() ||
+  undefined;
 
 /**
  * The archives a release attaches. Kept in step with the build_linux_cli
@@ -51,7 +61,7 @@ export function cliArchiveTarCommand(
 }
 
 export function cliArchiveFileName(version: string, platformKey: CliArchivePlatformKey): string {
-  return `t3-${version}-${platformKey}.${platformKey.startsWith("win32") ? "zip" : "tar.gz"}`;
+  return `code-plus-${version}-${platformKey}.${platformKey.startsWith("win32") ? "zip" : "tar.gz"}`;
 }
 
 const CLI_RELEASE_DEFAULT_BASE_URL = `https://github.com/${CLI_RELEASE_REPOSITORY}/releases/download`;

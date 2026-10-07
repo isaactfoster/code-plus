@@ -73,26 +73,26 @@ const RELEASE_ASSETS = {
 
 const VARIANT_CONFIG = {
   development: {
-    appName: "T3 Code Dev",
-    scheme: "t3code-dev",
-    iosBundleIdentifier: "com.t3tools.t3code.dev",
-    androidPackage: "com.t3tools.t3code.dev",
+    appName: "Code Plus Dev",
+    scheme: "codeplus-dev",
+    iosBundleIdentifier: "com.foscode.codeplus.dev",
+    androidPackage: "com.foscode.codeplus.dev",
     relyingParty: "clerk.t3.codes",
     assets: DEVELOPMENT_ASSETS,
   },
   preview: {
-    appName: "T3 Code Preview",
-    scheme: "t3code-preview",
-    iosBundleIdentifier: "com.t3tools.t3code.preview",
-    androidPackage: "com.t3tools.t3code.preview",
+    appName: "Code Plus Preview",
+    scheme: "codeplus-preview",
+    iosBundleIdentifier: "com.foscode.codeplus.preview",
+    androidPackage: "com.foscode.codeplus.preview",
     relyingParty: "clerk.t3.codes",
     assets: PREVIEW_ASSETS,
   },
   production: {
-    appName: "T3 Code",
-    scheme: "t3code",
-    iosBundleIdentifier: "com.t3tools.t3code",
-    androidPackage: "com.t3tools.t3code",
+    appName: "Code Plus",
+    scheme: "codeplus",
+    iosBundleIdentifier: "com.foscode.codeplus",
+    androidPackage: "com.foscode.codeplus",
     relyingParty: "clerk.t3.codes",
     assets: RELEASE_ASSETS,
   },
@@ -226,7 +226,7 @@ const sharingPlugin: NonNullable<ExpoConfig["plugins"]>[number] = [
 
 const config: ExpoConfig = {
   name: variant.appName,
-  slug: "t3-code",
+  slug: "code-plus",
   platforms: ["ios", "android"],
   scheme: variant.scheme,
   version: "2.0.0",

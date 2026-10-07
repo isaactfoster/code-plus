@@ -1,5 +1,5 @@
 /**
- * `t3 browser setup` - prepares a Linux host for T3's headless browser, which
+ * `code-plus browser setup` - prepares a Linux host for T3's headless browser, which
  * server browser tabs and HTML render previews share. It is the fix every
  * browser host error names, so it does the whole job in one run:
  *
@@ -10,6 +10,7 @@
  * Both need root. Without it, the command prints what it would change and the
  * `sudo` line to run. It is safe to run again; it skips what is already done.
  */
+import { readHomeEnv } from "@t3tools/shared/homeEnv";
 import {
   HostProcessEnvironment,
   HostProcessPlatform,
@@ -57,12 +58,12 @@ const runStep = Effect.fn("browserSetup.runStep")(function* (
 });
 
 /**
- * The T3 home to check. Under `sudo` the process home is root's, so an
- * unspecified home falls back to the invoking user's `~/.t3`.
+ * The Code Plus home to check. Under `sudo` the process home is root's, so
+ * an unspecified home falls back to the invoking user's `~/.code-plus`.
  */
 const setupBaseDir = Effect.fn("browserSetup.baseDir")(function* (explicit: Option.Option<string>) {
   const env = yield* HostProcessEnvironment;
-  const raw = Option.getOrUndefined(explicit) ?? env.T3CODE_HOME;
+  const raw = Option.getOrUndefined(explicit) ?? readHomeEnv(env);
   if (raw !== undefined || env.SUDO_USER === undefined) return yield* resolveBaseDir(raw);
   const spawner = yield* ChildProcessSpawner.ChildProcessSpawner;
   const entry = yield* spawner

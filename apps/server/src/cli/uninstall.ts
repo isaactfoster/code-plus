@@ -33,7 +33,7 @@ export class CliUninstallError extends Schema.TaggedError<CliUninstallError>()(
 }
 
 /**
- * What `t3 uninstall` would remove for one T3 home. Computed before anything
+ * What `code-plus uninstall` would remove for one T3 home. Computed before anything
  * is touched so the user sees the whole plan in one place.
  */
 export interface UninstallPlan {
@@ -218,5 +218,5 @@ const runUninstall = Effect.fn("cli.uninstall.run")(function* (input: {
     }
   }
   yield* Console.log("");
-  yield* Console.log("t3 is uninstalled. Thanks for trying T3 Code.");
+  yield* Console.log("code-plus is uninstalled. Thanks for trying Code Plus.");
 });
