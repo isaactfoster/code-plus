@@ -5,6 +5,7 @@ import {
   CodexSettings,
   CursorSettings,
   GrokSettings,
+  MuseSettings,
   OpenCodeSettings,
   PiSettings,
   ProviderDriverKind,
@@ -75,6 +76,11 @@ const PROVIDER_CLIENT_DEFINITIONS: readonly ProviderClientDefinition[] = [
     value: ProviderDriverKind.make("grok"),
     label: "Grok",
     settingsSchema: GrokSettings,
+  },
+  {
+    value: ProviderDriverKind.make("muse"),
+    label: "Muse",
+    settingsSchema: MuseSettings,
   },
   {
     value: ProviderDriverKind.make("opencode"),

@@ -2951,6 +2951,7 @@ it.layer(
               "codex",
               "cursor",
               "grok",
+              "muse",
               "opencode",
               "pi",
             ]);
