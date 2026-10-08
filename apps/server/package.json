@@ -4,7 +4,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/isaactfoster/foscode",
+    "url": "https://github.com/isaactfoster/code-plus",
     "directory": "apps/server"
   },
   "bin": {

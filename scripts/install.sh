@@ -2,7 +2,7 @@
 # Installs the Code Plus CLI from a GitHub Release archive. Needs only sh, tar,
 # sha256sum or shasum, and curl or wget; no Node, npm, or compiler.
 #
-#   curl -fsSL https://raw.githubusercontent.com/isaactfoster/foscode/main/scripts/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/isaactfoster/code-plus/main/scripts/install.sh | sh
 #
 # Environment:
 #   CODEPLUS_CHANNEL           release train to follow: stable, nightly, or preview
@@ -18,7 +18,7 @@
 # instead of fetching the release again.
 set -eu
 
-repo="isaactfoster/foscode"
+repo="isaactfoster/code-plus"
 base_url="${CODEPLUS_RELEASE_BASE_URL:-https://github.com/${repo}/releases/download}"
 code_plus_home="${CODEPLUS_HOME:-${T3CODE_HOME:-$HOME/.code-plus}}"
 bin_dir="${CODEPLUS_INSTALL_BIN_DIR:-$HOME/.local/bin}"

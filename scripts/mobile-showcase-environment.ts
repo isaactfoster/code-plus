@@ -124,7 +124,7 @@ export const SHOWCASE_PROJECTS = [
     id: "t3code",
     title: "T3 Code",
     directory: "t3code",
-    repositoryUrl: "https://github.com/isaactfoster/foscode.git",
+    repositoryUrl: "https://github.com/isaactfoster/code-plus.git",
     favicon: PROJECT_FAVICONS.t3code,
   },
   {
@@ -312,7 +312,7 @@ async function seedT3CodeWorkspace(workspaceRoot: string): Promise<void> {
   );
   await initializeRepository({
     workspaceRoot,
-    repositoryUrl: "https://github.com/isaactfoster/foscode.git",
+    repositoryUrl: "https://github.com/isaactfoster/code-plus.git",
     commitMessage: "Show connected environments",
   });
   await runGit(workspaceRoot, ["checkout", "-b", "feat/remote-command-center"]);
@@ -430,7 +430,7 @@ function insertThread(
 // V1 tables this seed owns. `projection_projects` is not listed: V2 still
 // stores projects there, so the seed upserts its own rows instead. V2 clients
 // do not read the V1 thread rows; moving the seed to V2 is tracked in
-// https://github.com/isaactfoster/foscode/issues.
+// https://github.com/isaactfoster/code-plus/issues.
 const SEEDED_V1_TABLES = [
   "projection_pending_approvals",
   "projection_thread_proposed_plans",

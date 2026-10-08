@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-repo='isaactfoster/foscode'
+repo='isaactfoster/code-plus'
 tag="${RELEASE_TAG:?RELEASE_TAG is required}"
 pkgrel="${PKGREL:-1}"
 

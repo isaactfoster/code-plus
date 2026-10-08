@@ -1,7 +1,7 @@
 # Installs the Code Plus CLI from a GitHub Release archive on Windows. Needs
 # only PowerShell 5.1+; no Node, npm, or compiler.
 #
-#   irm https://raw.githubusercontent.com/isaactfoster/foscode/main/scripts/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/isaactfoster/code-plus/main/scripts/install.ps1 | iex
 #
 # Environment:
 #   CODEPLUS_CHANNEL           release train to follow: stable, nightly, or preview
@@ -16,7 +16,7 @@
 $ErrorActionPreference = "Stop"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$repo = "isaactfoster/foscode"
+$repo = "isaactfoster/code-plus"
 $baseUrl = if ($env:CODEPLUS_RELEASE_BASE_URL) { $env:CODEPLUS_RELEASE_BASE_URL.TrimEnd("/") } else { "https://github.com/$repo/releases/download" }
 $homeDir = if ($env:CODEPLUS_HOME) { $env:CODEPLUS_HOME } else { Join-Path $HOME ".code-plus" }
 $binDir = if ($env:CODEPLUS_INSTALL_BIN_DIR) { $env:CODEPLUS_INSTALL_BIN_DIR } else { Join-Path $HOME ".local\bin" }

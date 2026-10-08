@@ -11,13 +11,13 @@ launch Code Plus and configure providers afterwards.
 ## Command line
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/isaactfoster/foscode/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/isaactfoster/code-plus/main/scripts/install.sh | sh
 ```
 
 On Windows, in PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/isaactfoster/foscode/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/isaactfoster/code-plus/main/scripts/install.ps1 | iex
 ```
 
 This puts `code-plus` in `~/.local/bin`. If your shell reports `command not found`
@@ -48,10 +48,10 @@ Node.js for `npx`).
 
 There is no `code-plus` executable for Intel Macs (the desktop app is available). To
 run a server there, build it from source with Node.js 24 and `vp`
-([Install vp](https://github.com/isaactfoster/foscode#install-vp)):
+([Install vp](https://github.com/isaactfoster/code-plus#install-vp)):
 
 ```bash
-git clone https://github.com/isaactfoster/foscode
+git clone https://github.com/isaactfoster/code-plus
 cd foscode && vp i && vp run build:desktop
 node apps/server/dist/bin.mjs
 ```
@@ -61,7 +61,7 @@ update it with `git pull` and a rebuild.
 
 ## Desktop app
 
-Download a release from [GitHub Releases](https://github.com/isaactfoster/foscode/releases),
+Download a release from [GitHub Releases](https://github.com/isaactfoster/code-plus/releases),
 or use a package manager:
 
 | Platform           | Install                            |

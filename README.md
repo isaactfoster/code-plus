@@ -25,13 +25,13 @@ We wanted something performant, remote-ready, and truly open. If we ever go the 
 ### Command line
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/isaactfoster/foscode/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/isaactfoster/code-plus/main/scripts/install.sh | sh
 ```
 
 On Windows, in PowerShell:
 
 ```powershell
-irm https://raw.githubusercontent.com/isaactfoster/foscode/main/scripts/install.ps1 | iex
+irm https://raw.githubusercontent.com/isaactfoster/code-plus/main/scripts/install.ps1 | iex
 ```
 
 Then run `code-plus` to start the server and open the local web app. `code-plus service install` keeps it running in the background, `code-plus update` moves to a newer release, and `code-plus --help` has the full reference.
@@ -40,11 +40,11 @@ To try it once without installing, run `npx code-plus@latest` instead.
 
 ### Desktop app
 
-Install the latest version of the desktop app from [GitHub Releases](https://github.com/isaactfoster/foscode/releases). Registry packages (winget, Homebrew, AUR) are not published for this fork yet.
+Install the latest version of the desktop app from [GitHub Releases](https://github.com/isaactfoster/code-plus/releases). Registry packages (winget, Homebrew, AUR) are not published for this fork yet.
 
 #### Debian, Ubuntu (`.deb`)
 
-Download the `.deb` from [GitHub Releases](https://github.com/isaactfoster/foscode/releases), then:
+Download the `.deb` from [GitHub Releases](https://github.com/isaactfoster/code-plus/releases), then:
 
 ```bash
 sudo apt install ./Code-Plus-*.deb
